@@ -2,7 +2,12 @@ package me.pilkeysek;
 
 import com.eduardomcb.discord.webhook.WebhookClient;
 import com.eduardomcb.discord.webhook.WebhookManager;
+import java.util.EnumSet;
 import java.util.List;
+import me.pilkeysek.discord.MessageEventListener;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +33,7 @@ public class DiscordSyncPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
+    JDALogger.setFallbackLoggerEnabled(false);
     this.config = getConfiguration();
     this.config.load();
     setDefaultConfigValues();
@@ -50,6 +56,14 @@ public class DiscordSyncPlugin extends JavaPlugin {
     getServer()
         .getPluginManager()
         .registerEvent(Type.PLAYER_CHAT, new PlayerChatEventListener(), Priority.Normal, this);
+
+    if (this.config.getBoolean("enableBot", false)) {
+      JDABuilder.createLight(
+              this.config.getString("botToken"),
+              EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
+          .addEventListeners(new MessageEventListener())
+          .build();
+    }
   }
 
   @Override
@@ -73,6 +87,15 @@ public class DiscordSyncPlugin extends JavaPlugin {
     }
     if (!configKeys.contains("enableChatHeads")) {
       this.config.setProperty("enableChatHeads", true);
+    }
+    if (!configKeys.contains("enableBot")) {
+      this.config.setProperty("enableBot", false);
+    }
+    if (!configKeys.contains("botToken")) {
+      this.config.setProperty("botToken", "");
+    }
+    if (!configKeys.contains("botMessageChannel")) {
+      this.config.setProperty("botMessageChannel", "");
     }
     this.config.save();
   }

@@ -30,6 +30,16 @@
         <artifactId>discord-webhook</artifactId>
         <version>1.0.0</version>
     </dependency>
+    <dependency>
+        <groupId>net.dv8tion</groupId>
+        <artifactId>JDA</artifactId>
+        <version>6.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-nop</artifactId>
+        <version>2.0.17</version>
+    </dependency>
   </dependencies>
   <build>
         <plugins>
