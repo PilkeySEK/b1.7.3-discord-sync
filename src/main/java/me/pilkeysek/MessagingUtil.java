@@ -47,7 +47,8 @@ public class MessagingUtil {
 
   private static String filterMinecraftMessage(String minecraftMessage) {
     String filteredMessage = minecraftMessage;
-    filteredMessage.replace("@", "[at]");
+    // yes i know this is a bit aggressive but i don't want to implement a better system rn
+    filteredMessage = filteredMessage.replace("@", "[at]");
     return filteredMessage;
   }
 
@@ -56,7 +57,7 @@ public class MessagingUtil {
     boolean colorCodesEnabled =
         DiscordSyncPlugin.instance.config.getBoolean("colorCodesenabled", true);
     if (!colorCodesEnabled) {
-      filteredMessage.replace("§", "");
+      filteredMessage = filteredMessage.replace("§", "");
     }
     return filteredMessage;
   }
