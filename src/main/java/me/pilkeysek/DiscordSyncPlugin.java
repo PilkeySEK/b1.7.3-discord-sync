@@ -97,6 +97,9 @@ public class DiscordSyncPlugin extends JavaPlugin {
     if (!configKeys.contains("botMessageChannel")) {
       this.config.setProperty("botMessageChannel", "");
     }
+    if (!configKeys.contains("colorCodesEnabled")) {
+      this.config.setProperty("colorCodesEnabled", true);
+    }
     this.config.save();
   }
 }

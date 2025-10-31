@@ -3,6 +3,7 @@ package me.pilkeysek;
 import com.eduardomcb.discord.webhook.WebhookClient;
 import com.eduardomcb.discord.webhook.WebhookManager;
 import com.eduardomcb.discord.webhook.models.Message;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class MessagingUtil {
@@ -16,11 +17,48 @@ public class MessagingUtil {
       avatarURL = "https://mc-heads.net/avatar/" + mhfSteveUUID;
     }
     Message discordMessage =
-        new Message().setContent(message).setAvatarUrl(avatarURL).setUsername(sender.getName());
+        new Message()
+            .setContent(filterMinecraftMessage(message))
+            .setAvatarUrl(avatarURL)
+            .setUsername(sender.getName());
     // using a thread to send the request to avoid blocking the entire server each time
     new MessageSenderThread(
             discordMessage, DiscordSyncPlugin.instance.config.getString("webhookURL"))
         .start();
+  }
+
+  public static void sendMessageD2M(String message, String sender) {
+    DiscordSyncPlugin.instance
+        .getServer()
+        .broadcastMessage(
+            ChatColor.GRAY
+                + "["
+                + ChatColor.AQUA
+                + "Discord"
+                + ChatColor.GRAY
+                + "] "
+                + ChatColor.GOLD
+                + sender
+                + ChatColor.GRAY
+                + ": "
+                + ChatColor.WHITE
+                + filterDiscordMessage(message));
+  }
+
+  private static String filterMinecraftMessage(String minecraftMessage) {
+    String filteredMessage = minecraftMessage;
+    filteredMessage.replace("@", "[at]");
+    return filteredMessage;
+  }
+
+  private static String filterDiscordMessage(String discordMessage) {
+    String filteredMessage = discordMessage;
+    boolean colorCodesEnabled =
+        DiscordSyncPlugin.instance.config.getBoolean("colorCodesenabled", true);
+    if (!colorCodesEnabled) {
+      filteredMessage.replace("§", "");
+    }
+    return filteredMessage;
   }
 
   private static class MessageSenderThread extends Thread {
