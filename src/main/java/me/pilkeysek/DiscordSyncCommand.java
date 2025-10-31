@@ -49,13 +49,13 @@ public class DiscordSyncCommand implements CommandExecutor {
           return true;
         }
         if (args[1].equals("enableBot")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabeBot", true);
+          DiscordSyncPlugin.instance.config.setProperty("enableBot", true);
           sender.sendMessage(ChatColor.GREEN + "Enabled Discord Bot.");
           DiscordSyncPlugin.instance.config.save();
           return true;
         }
         if (args[1].equals("disableBot")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabeBot", false);
+          DiscordSyncPlugin.instance.config.setProperty("enableBot", false);
           sender.sendMessage(ChatColor.GREEN + "Disabled Discord Bot.");
           DiscordSyncPlugin.instance.config.save();
           return true;
