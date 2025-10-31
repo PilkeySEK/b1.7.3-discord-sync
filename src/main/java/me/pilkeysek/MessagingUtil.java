@@ -1,0 +1,55 @@
+package me.pilkeysek;
+
+import com.eduardomcb.discord.webhook.WebhookClient;
+import com.eduardomcb.discord.webhook.WebhookManager;
+import com.eduardomcb.discord.webhook.models.Message;
+import org.bukkit.entity.Player;
+
+public class MessagingUtil {
+  public static String mhfSteveUUID = "c06f89064c8a49119c29ea1dbd1aab82";
+
+  public static void sendMessageM2D(String message, Player sender) {
+    String avatarURL;
+    if (DiscordSyncPlugin.instance.config.getBoolean("enableChatHeads", true)) {
+      avatarURL = "https://mc-heads.net/avatar/" + sender.getName().toLowerCase();
+    } else {
+      avatarURL = "https://mc-heads.net/avatar/" + mhfSteveUUID;
+    }
+    Message discordMessage =
+        new Message().setContent(message).setAvatarUrl(avatarURL).setUsername(sender.getName());
+    // using a thread to send the request to avoid blocking the entire server each time
+    new MessageSenderThread(
+            discordMessage, DiscordSyncPlugin.instance.config.getString("webhookURL"))
+        .start();
+  }
+
+  private static class MessageSenderThread extends Thread {
+    private Message message;
+    private String webhookURL;
+
+    public MessageSenderThread(Message message, String webhookURL) {
+      this.message = message;
+      this.webhookURL = webhookURL;
+    }
+
+    @Override
+    public void run() {
+      WebhookManager manager = new WebhookManager().setChannelUrl(webhookURL).setMessage(message);
+      manager.setListener(
+          new WebhookClient.Callback() {
+            @Override
+            public void onSuccess(String response) {}
+
+            @Override
+            public void onFailure(int statusCode, String errorMessage) {
+              DiscordSyncPlugin.instance.logInfo(
+                  "Failed to send Webhook message: status="
+                      + statusCode
+                      + ", error: "
+                      + errorMessage);
+            }
+          });
+      manager.exec();
+    }
+  }
+}

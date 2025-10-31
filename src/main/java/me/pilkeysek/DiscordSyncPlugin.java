@@ -71,6 +71,9 @@ public class DiscordSyncPlugin extends JavaPlugin {
     if (!configKeys.contains("enabled")) {
       this.config.setProperty("enabled", true);
     }
+    if (!configKeys.contains("enableChatHeads")) {
+      this.config.setProperty("enableChatHeads", true);
+    }
     this.config.save();
   }
 }
