@@ -48,17 +48,64 @@ public class DiscordSyncCommand implements CommandExecutor {
           DiscordSyncPlugin.instance.config.save();
           return true;
         }
+        if (args[1].equals("enableBot")) {
+          DiscordSyncPlugin.instance.config.setProperty("enabeBot", true);
+          sender.sendMessage(ChatColor.GREEN + "Enabled Discord Bot.");
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
+        if (args[1].equals("disableBot")) {
+          DiscordSyncPlugin.instance.config.setProperty("enabeBot", false);
+          sender.sendMessage(ChatColor.GREEN + "Disabled Discord Bot.");
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
+        if (args[1].equals("enableColorCodes")) {
+          DiscordSyncPlugin.instance.config.setProperty("enabeColorCodes", true);
+          sender.sendMessage(ChatColor.GREEN + "Enabled color codes.");
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
+        if (args[1].equals("disableColorCodes")) {
+          DiscordSyncPlugin.instance.config.setProperty("enabeColorCodes", false);
+          sender.sendMessage(ChatColor.GREEN + "Disabled color codes.");
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
         if (args[1].equals("webhookURL")) {
-          if (args.length >= 3) {
-            String url = args[2];
-            DiscordSyncPlugin.instance.config.setProperty("webhookURL", url);
-            sender.sendMessage(
-                ChatColor.GREEN + "Set the Webhook URL to: " + ChatColor.DARK_AQUA + url);
-            DiscordSyncPlugin.instance.config.save();
-            return true;
+          if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
+            return false;
           }
-          sender.sendMessage(ChatColor.RED + "Specify more arguments.");
-          return false;
+          String url = args[2];
+          DiscordSyncPlugin.instance.config.setProperty("webhookURL", url);
+          sender.sendMessage(
+              ChatColor.GREEN + "Set the Webhook URL to: " + ChatColor.DARK_AQUA + url);
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
+        if (args[1].equals("botToken")) {
+          if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
+            return false;
+          }
+          String token = args[2];
+          DiscordSyncPlugin.instance.config.setProperty("botToken", token);
+          sender.sendMessage(ChatColor.GREEN + "Set the bot token.");
+          DiscordSyncPlugin.instance.config.save();
+          return true;
+        }
+        if (args[1].equals("botMessageChannel")) {
+          if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
+            return false;
+          }
+          String channel = args[2];
+          DiscordSyncPlugin.instance.config.setProperty("botMessageChannel", channel);
+          sender.sendMessage(
+              ChatColor.GREEN + "Set the bot channel to: " + ChatColor.DARK_AQUA + channel);
+          DiscordSyncPlugin.instance.config.save();
+          return true;
         }
         sender.sendMessage(
             ChatColor.RED + "Unrecognized argument: " + ChatColor.DARK_AQUA + args[1]);

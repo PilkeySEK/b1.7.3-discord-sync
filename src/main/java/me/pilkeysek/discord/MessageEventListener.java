@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class MessageEventListener extends ListenerAdapter {
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
+    if (!DiscordSyncPlugin.instance.config.getBoolean("enabled", true)) return;
     User author = event.getAuthor();
     if (author.isBot()) return;
     MessageChannelUnion channel = event.getChannel();
