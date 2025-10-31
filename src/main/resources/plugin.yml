@@ -4,4 +4,4 @@ version: 1.0
 commands:
   discordsync:
     description: Configure DiscordSync
-    usage: /discordsync config (webhookURL <url>|botToken <token>|botMessageChannel <channel id>|enable|disable|enableBot|disableBot|enableColorCodes|disableColorCodes)
+    usage: /discordsync config (webhookURL <url>|botToken <token>|botMessageChannel <channel id>|enable|disable|enableBot|disableBot|enableColorCodes|disableColorCodes|reload)

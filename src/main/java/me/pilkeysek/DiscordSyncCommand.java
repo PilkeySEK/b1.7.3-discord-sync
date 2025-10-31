@@ -72,6 +72,11 @@ public class DiscordSyncCommand implements CommandExecutor {
           DiscordSyncPlugin.instance.config.save();
           return true;
         }
+        if (args[1].equals("reload")) {
+          DiscordSyncPlugin.instance.config.load();
+          sender.sendMessage(ChatColor.GREEN + "Reloaded config.");
+          return true;
+        }
         if (args[1].equals("webhookURL")) {
           if (args.length < 3) {
             sender.sendMessage(ChatColor.RED + "Specify more arguments.");
