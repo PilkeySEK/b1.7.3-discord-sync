@@ -55,7 +55,7 @@ public class MessagingUtil {
   private static String filterDiscordMessage(String discordMessage) {
     String filteredMessage = discordMessage;
     boolean colorCodesEnabled =
-        DiscordSyncPlugin.instance.config.getBoolean("colorCodesenabled", true);
+        DiscordSyncPlugin.instance.config.getBoolean("colorCodesEnabled", true);
     if (!colorCodesEnabled) {
       filteredMessage = filteredMessage.replace("§", "");
     }
