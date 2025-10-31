@@ -1,0 +1,7 @@
+name: DiscordSync
+main: me.pilkeysek.DiscordSyncPlugin
+version: 1.0
+commands:
+  discordsync:
+    description: Configure DiscordSync
+    usage: /discordsync config (webhookURL <url>|enable|disable)
