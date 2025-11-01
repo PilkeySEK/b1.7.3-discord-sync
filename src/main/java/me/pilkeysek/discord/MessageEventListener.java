@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 public class MessageEventListener extends ListenerAdapter {
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
-    System.out.println("Message");
     if (!DiscordSyncPlugin.instance.config.getBoolean(ConfigurationUtil.KEY_PLUGIN_ENABLED, true))
       return;
     User author = event.getAuthor();
