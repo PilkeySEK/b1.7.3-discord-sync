@@ -1,5 +1,6 @@
 package me.pilkeysek;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class ConfigurationUtil {
   public static String KEY_BOT_CHANNEL = "bot.channel";
   public static String KEY_BOT_COLOR_CODES_ENABLED = "bot.color_codes";
   public static String KEY_BOT_NAME_DISPLAY_TYPE = "bot.name_display_type";
+  public static String KEY_BOT_COMMAND_PREFIXES = "bot.command_prefixes";
 
   public static Map<String, Object> getDefaultConfigKV() {
     Map<String, Object> map = new HashMap<>();
@@ -27,6 +29,7 @@ public class ConfigurationUtil {
     map.put(KEY_BOT_CHANNEL, "");
     map.put(KEY_BOT_COLOR_CODES_ENABLED, true);
     map.put(KEY_BOT_NAME_DISPLAY_TYPE, "username");
+    map.put(KEY_BOT_COMMAND_PREFIXES, Arrays.asList("mc!", "mc:"));
     return map;
   }
 }
