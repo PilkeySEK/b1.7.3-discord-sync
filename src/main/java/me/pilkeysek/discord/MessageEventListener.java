@@ -24,7 +24,20 @@ public class MessageEventListener extends ListenerAdapter {
       return;
     }
     if (!channel.getId().equals(botMessageChannel)) return;
-    String username = author.getName();
+    String username;
+    if (DiscordSyncPlugin.instance
+        .config
+        .getString(ConfigurationUtil.KEY_BOT_NAME_DISPLAY_TYPE)
+        .equals("display_name")) {
+      username = author.getGlobalName();
+      if (username == null) {
+        username = author.getName();
+      } else {
+        username = author.getEffectiveName();
+      }
+    } else {
+      username = author.getName();
+    }
     MessagingUtil.sendMessageD2M(message, username);
   }
 }

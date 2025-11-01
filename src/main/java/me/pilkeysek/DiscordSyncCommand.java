@@ -55,7 +55,7 @@ public class DiscordSyncCommand implements CommandExecutor {
         }
         String prop =
             String.join(" ", (new ArrayList<>(Arrays.asList(args))).subList(3, args.length));
-        // this tries to see if there are booleans, integers, or floats present. if yes, it sets
+        // this tries to see if there are booleans or integers. if yes, it sets
         // them as their type instead of string
         if (prop.equalsIgnoreCase("true") || prop.equalsIgnoreCase("false")) {
           DiscordSyncPlugin.instance.config.setProperty(configKey, Boolean.parseBoolean(prop));
@@ -64,12 +64,7 @@ public class DiscordSyncCommand implements CommandExecutor {
             int x = Integer.parseInt(prop);
             DiscordSyncPlugin.instance.config.setProperty(configKey, x);
           } catch (NumberFormatException e) {
-            try {
-              float f = Float.parseFloat(prop);
-              DiscordSyncPlugin.instance.config.setProperty(configKey, f);
-            } catch (NumberFormatException e1) {
-              DiscordSyncPlugin.instance.config.setProperty(configKey, prop);
-            }
+            DiscordSyncPlugin.instance.config.setProperty(configKey, prop);
           }
         }
         DiscordSyncPlugin.instance.config.save();
