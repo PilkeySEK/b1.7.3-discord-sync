@@ -2,6 +2,7 @@ package me.pilkeysek;
 
 import com.eduardomcb.discord.webhook.WebhookClient;
 import com.eduardomcb.discord.webhook.WebhookManager;
+import com.eduardomcb.discord.webhook.models.Embed;
 import com.eduardomcb.discord.webhook.models.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -47,6 +48,50 @@ public class MessagingUtil {
                 + filterDiscordMessage(message));
   }
 
+  public static void sendPlayerJoinMessage(Player player) {
+    String avatarURL;
+    if (DiscordSyncPlugin.instance.config.getBoolean(
+        ConfigurationUtil.KEY_CHAT_HEADS_ENABLED, true)) {
+      avatarURL = "https://mc-heads.net/avatar/" + player.getName().toLowerCase();
+    } else {
+      avatarURL = "https://mc-heads.net/avatar/" + mhfSteveUUID;
+    }
+    Embed joinMessage =
+        new Embed()
+            .setDescription("**" + player.getName() + "** joined the game.")
+            .setColor(rgbToDecimal(0x21, 0xCE, 0x00));
+    // using a thread to send the request to avoid blocking the entire server each time
+    new MessageSenderThread(
+            joinMessage,
+            new Message().setAvatarUrl(avatarURL).setUsername(player.getName()),
+            DiscordSyncPlugin.instance.config.getString(ConfigurationUtil.KEY_WEBHOOK_URL))
+        .start();
+  }
+
+  public static void sendPlayerQuitMessage(Player player) {
+    String avatarURL;
+    if (DiscordSyncPlugin.instance.config.getBoolean(
+        ConfigurationUtil.KEY_CHAT_HEADS_ENABLED, true)) {
+      avatarURL = "https://mc-heads.net/avatar/" + player.getName().toLowerCase();
+    } else {
+      avatarURL = "https://mc-heads.net/avatar/" + mhfSteveUUID;
+    }
+    Embed joinMessage =
+        new Embed()
+            .setDescription("**" + player.getName() + "** left the game.")
+            .setColor(rgbToDecimal(0xAC, 0x00, 0x00));
+    // using a thread to send the request to avoid blocking the entire server each time
+    new MessageSenderThread(
+            joinMessage,
+            new Message().setAvatarUrl(avatarURL).setUsername(player.getName()),
+            DiscordSyncPlugin.instance.config.getString(ConfigurationUtil.KEY_WEBHOOK_URL))
+        .start();
+  }
+
+  private static int rgbToDecimal(int r, int g, int b) {
+    return (r << 16) + (g << 8) + b;
+  }
+
   private static String filterMinecraftMessage(String minecraftMessage) {
     String filteredMessage = minecraftMessage;
     // yes i know this is a bit aggressive but i don't want to implement a better system rn
@@ -66,7 +111,8 @@ public class MessagingUtil {
   }
 
   private static class MessageSenderThread extends Thread {
-    private Message message;
+    private Message message = null;
+    private Embed embed = null;
     private String webhookURL;
 
     public MessageSenderThread(Message message, String webhookURL) {
@@ -74,9 +120,20 @@ public class MessagingUtil {
       this.webhookURL = webhookURL;
     }
 
+    public MessageSenderThread(Embed embed, Message message, String webhookURL) {
+      this.embed = embed;
+      this.message = message;
+      this.webhookURL = webhookURL;
+    }
+
     @Override
     public void run() {
-      WebhookManager manager = new WebhookManager().setChannelUrl(webhookURL).setMessage(message);
+      WebhookManager manager = new WebhookManager().setChannelUrl(webhookURL);
+      if (this.embed != null) {
+        Embed[] embeds = {this.embed};
+        manager.setEmbeds(embeds);
+      }
+      manager.setMessage(message);
       manager.setListener(
           new WebhookClient.Callback() {
             @Override

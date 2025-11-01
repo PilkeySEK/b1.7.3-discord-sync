@@ -5,6 +5,9 @@ import com.eduardomcb.discord.webhook.WebhookManager;
 import java.util.EnumSet;
 import java.util.Map;
 import me.pilkeysek.discord.MessageEventListener;
+import me.pilkeysek.event.PlayerChatEventListener;
+import me.pilkeysek.event.PlayerJoinEventListener;
+import me.pilkeysek.event.PlayerQuitEventListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -58,6 +61,12 @@ public class DiscordSyncPlugin extends JavaPlugin {
     getServer()
         .getPluginManager()
         .registerEvent(Type.PLAYER_CHAT, new PlayerChatEventListener(), Priority.Normal, this);
+    getServer()
+        .getPluginManager()
+        .registerEvent(Type.PLAYER_JOIN, new PlayerJoinEventListener(), Priority.Normal, this);
+    getServer()
+        .getPluginManager()
+        .registerEvent(Type.PLAYER_QUIT, new PlayerQuitEventListener(), Priority.Normal, this);
     this.reload();
   }
 
