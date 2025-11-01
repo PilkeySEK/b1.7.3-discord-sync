@@ -1,5 +1,6 @@
 package me.pilkeysek.discord;
 
+import me.pilkeysek.ConfigurationUtil;
 import me.pilkeysek.DiscordSyncPlugin;
 import me.pilkeysek.MessagingUtil;
 import net.dv8tion.jda.api.entities.User;
@@ -10,12 +11,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class MessageEventListener extends ListenerAdapter {
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
-    if (!DiscordSyncPlugin.instance.config.getBoolean("enabled", true)) return;
+    if (!DiscordSyncPlugin.instance.config.getBoolean(ConfigurationUtil.KEY_PLUGIN_ENABLED, true))
+      return;
     User author = event.getAuthor();
     if (author.isBot()) return;
     MessageChannelUnion channel = event.getChannel();
     String message = event.getMessage().getContentDisplay();
-    String botMessageChannel = DiscordSyncPlugin.instance.config.getString("botMessageChannel");
+    String botMessageChannel =
+        DiscordSyncPlugin.instance.config.getString(ConfigurationUtil.KEY_BOT_CHANNEL);
     if (botMessageChannel == null) {
       DiscordSyncPlugin.instance.logInfo("The channel to check messages for is not defined.");
       return;

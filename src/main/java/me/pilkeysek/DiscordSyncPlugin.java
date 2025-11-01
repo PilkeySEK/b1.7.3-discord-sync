@@ -3,7 +3,7 @@ package me.pilkeysek;
 import com.eduardomcb.discord.webhook.WebhookClient;
 import com.eduardomcb.discord.webhook.WebhookManager;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.Map;
 import me.pilkeysek.discord.MessageEventListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -62,13 +62,14 @@ public class DiscordSyncPlugin extends JavaPlugin {
   }
 
   public void reload() {
+    this.config.load();
     if (this.jda != null) {
       this.jda.shutdownNow();
     }
-    if (this.config.getBoolean("enableBot", false)) {
+    if (this.config.getBoolean(ConfigurationUtil.KEY_BOT_ENABLED, false)) {
       this.jda =
           JDABuilder.createLight(
-                  this.config.getString("botToken"),
+                  this.config.getString(ConfigurationUtil.KEY_BOT_TOKEN),
                   EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
               .addEventListeners(new MessageEventListener())
               .build();
@@ -87,28 +88,14 @@ public class DiscordSyncPlugin extends JavaPlugin {
   }
 
   public void setDefaultConfigValues() {
-    List<String> configKeys = this.config.getKeys();
-    if (!configKeys.contains("webhookURL")) {
-      this.config.setProperty("webhookURL", WEBHOOK_DEFAULT_VALUE);
-    }
-    if (!configKeys.contains("enabled")) {
-      this.config.setProperty("enabled", true);
-    }
-    if (!configKeys.contains("enableChatHeads")) {
-      this.config.setProperty("enableChatHeads", true);
-    }
-    if (!configKeys.contains("enableBot")) {
-      this.config.setProperty("enableBot", false);
-    }
-    if (!configKeys.contains("botToken")) {
-      this.config.setProperty("botToken", "");
-    }
-    if (!configKeys.contains("botMessageChannel")) {
-      this.config.setProperty("botMessageChannel", "");
-    }
-    if (!configKeys.contains("colorCodesEnabled")) {
-      this.config.setProperty("colorCodesEnabled", true);
-    }
+    Map<String, Object> defaultConfig = ConfigurationUtil.getDefaultConfigKV();
+    defaultConfig.forEach(
+        (key, value) -> {
+          Object prop = this.config.getProperty(key);
+          if (prop == null) {
+            this.config.setProperty(key, value);
+          }
+        });
     this.config.save();
   }
 }

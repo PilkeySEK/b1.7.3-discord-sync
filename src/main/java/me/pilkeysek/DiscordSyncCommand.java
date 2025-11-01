@@ -1,5 +1,7 @@
 package me.pilkeysek;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 public class DiscordSyncCommand implements CommandExecutor {
+  private final String MSG_SPECIFY_MORE_ARGUMENTS = ChatColor.RED + "Specify more arguments.";
+
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 0) {
@@ -18,108 +22,82 @@ public class DiscordSyncCommand implements CommandExecutor {
       return true;
     }
 
-    if (args.length == 1) {
-      return false;
-    }
-
-    if (args.length >= 2) {
-      if (args[0].equals("config")) {
-        if (!sender.hasPermission("discordsync.config")
-            && !(sender instanceof ConsoleCommandSender)) {
+    if (args[0].equals("config")) {
+      if (!sender.hasPermission("discordsync.config")
+          && !(sender instanceof ConsoleCommandSender)
+          && !sender.isOp()) {
+        sender.sendMessage(ChatColor.RED + "You do not have permission to configure DiscordSync.");
+        return true;
+      }
+      if (args.length < 2) {
+        sender.sendMessage(MSG_SPECIFY_MORE_ARGUMENTS);
+        return true;
+      }
+      String configKey = args[2];
+      if (args[1].equals("remove")) {
+        if (args.length != 3) {
+          sender.sendMessage(MSG_SPECIFY_MORE_ARGUMENTS);
+          return true;
+        }
+        if (DiscordSyncPlugin.instance.config.getProperty(configKey) == null) {
           sender.sendMessage(
-              ChatColor.RED + "You do not have permission to configure DiscordSync.");
+              ChatColor.RED + "The configuration does not contain a property '" + configKey + "'.");
           return true;
         }
-        if (args[1].equals("enable")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabled", true);
-          sender.sendMessage(
-              ChatColor.GREEN
-                  + "Enabled DiscordSync. You may need to also set the Webhook URL with "
-                  + ChatColor.DARK_AQUA
-                  + "/discordsync config webhookURL <url>"
-                  + ChatColor.GREEN
-                  + ".");
-          DiscordSyncPlugin.instance.config.save();
+        DiscordSyncPlugin.instance.config.removeProperty(configKey);
+        DiscordSyncPlugin.instance.config.save();
+        sender.sendMessage(ChatColor.GREEN + "Removed key '" + configKey + "' from the config");
+        return true;
+      } else if (args[1].equals("set")) {
+        if (args.length < 4) {
+          sender.sendMessage(MSG_SPECIFY_MORE_ARGUMENTS);
           return true;
         }
-        if (args[1].equals("disable")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabled", false);
-          sender.sendMessage(ChatColor.GREEN + "Disabled DiscordSync.");
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
-        if (args[1].equals("enableBot")) {
-          DiscordSyncPlugin.instance.config.setProperty("enableBot", true);
-          sender.sendMessage(ChatColor.GREEN + "Enabled Discord Bot.");
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
-        if (args[1].equals("disableBot")) {
-          DiscordSyncPlugin.instance.config.setProperty("enableBot", false);
-          sender.sendMessage(ChatColor.GREEN + "Disabled Discord Bot.");
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
-        if (args[1].equals("enableColorCodes")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabeColorCodes", true);
-          sender.sendMessage(ChatColor.GREEN + "Enabled color codes.");
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
-        if (args[1].equals("disableColorCodes")) {
-          DiscordSyncPlugin.instance.config.setProperty("enabeColorCodes", false);
-          sender.sendMessage(ChatColor.GREEN + "Disabled color codes.");
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
-        if (args[1].equals("reload")) {
-          DiscordSyncPlugin.instance.config.load();
-          DiscordSyncPlugin.instance.reload();
-          sender.sendMessage(ChatColor.GREEN + "Reloaded config and plugin.");
-          return true;
-        }
-        if (args[1].equals("webhookURL")) {
-          if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
-            return false;
+        String prop =
+            String.join(" ", (new ArrayList<>(Arrays.asList(args))).subList(3, args.length));
+        // this tries to see if there are booleans, integers, or floats present. if yes, it sets
+        // them as their type instead of string
+        if (prop.equalsIgnoreCase("true") || prop.equalsIgnoreCase("false")) {
+          DiscordSyncPlugin.instance.config.setProperty(configKey, Boolean.parseBoolean(prop));
+        } else {
+          try {
+            int x = Integer.parseInt(prop);
+            DiscordSyncPlugin.instance.config.setProperty(configKey, x);
+          } catch (NumberFormatException e) {
+            try {
+              float f = Float.parseFloat(prop);
+              DiscordSyncPlugin.instance.config.setProperty(configKey, f);
+            } catch (NumberFormatException e1) {
+              DiscordSyncPlugin.instance.config.setProperty(configKey, prop);
+            }
           }
-          String url = args[2];
-          DiscordSyncPlugin.instance.config.setProperty("webhookURL", url);
-          sender.sendMessage(
-              ChatColor.GREEN + "Set the Webhook URL to: " + ChatColor.DARK_AQUA + url);
-          DiscordSyncPlugin.instance.config.save();
+        }
+        DiscordSyncPlugin.instance.config.save();
+        sender.sendMessage(ChatColor.GREEN + "Set property '" + configKey + "'.");
+        return true;
+      } else if (args[1].equals("get")) {
+        if (args.length != 3) {
+          sender.sendMessage(MSG_SPECIFY_MORE_ARGUMENTS);
           return true;
         }
-        if (args[1].equals("botToken")) {
-          if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
-            return false;
-          }
-          String token = args[2];
-          DiscordSyncPlugin.instance.config.setProperty("botToken", token);
-          sender.sendMessage(ChatColor.GREEN + "Set the bot token.");
-          DiscordSyncPlugin.instance.config.save();
+        Object prop = DiscordSyncPlugin.instance.config.getProperty(configKey);
+        if (prop == null) {
+          sender.sendMessage(ChatColor.GREEN + "'" + configKey + "' is not set.");
           return true;
         }
-        if (args[1].equals("botMessageChannel")) {
-          if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED + "Specify more arguments.");
-            return false;
-          }
-          String channel = args[2];
-          DiscordSyncPlugin.instance.config.setProperty("botMessageChannel", channel);
-          sender.sendMessage(
-              ChatColor.GREEN + "Set the bot channel to: " + ChatColor.DARK_AQUA + channel);
-          DiscordSyncPlugin.instance.config.save();
-          return true;
-        }
+        sender.sendMessage(ChatColor.GREEN + prop.toString());
+        return true;
+      } else {
         sender.sendMessage(
             ChatColor.RED + "Unrecognized argument: " + ChatColor.DARK_AQUA + args[1]);
-        return false;
+        return true;
       }
-      sender.sendMessage(ChatColor.RED + "Unrecognized argument: " + ChatColor.DARK_AQUA + args[0]);
-      return false;
+    } else if (args[0].equals("reload")) {
+      DiscordSyncPlugin.instance.reload();
+      sender.sendMessage(ChatColor.GREEN + "Reloaded DiscordSync.");
+      return true;
     }
+    sender.sendMessage(ChatColor.RED + "Unrecognized argument: " + ChatColor.DARK_AQUA + args[0]);
     return true;
   }
 }

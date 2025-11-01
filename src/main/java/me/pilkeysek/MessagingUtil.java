@@ -11,7 +11,8 @@ public class MessagingUtil {
 
   public static void sendMessageM2D(String message, Player sender) {
     String avatarURL;
-    if (DiscordSyncPlugin.instance.config.getBoolean("enableChatHeads", true)) {
+    if (DiscordSyncPlugin.instance.config.getBoolean(
+        ConfigurationUtil.KEY_CHAT_HEADS_ENABLED, true)) {
       avatarURL = "https://mc-heads.net/avatar/" + sender.getName().toLowerCase();
     } else {
       avatarURL = "https://mc-heads.net/avatar/" + mhfSteveUUID;
@@ -23,7 +24,8 @@ public class MessagingUtil {
             .setUsername(sender.getName());
     // using a thread to send the request to avoid blocking the entire server each time
     new MessageSenderThread(
-            discordMessage, DiscordSyncPlugin.instance.config.getString("webhookURL"))
+            discordMessage,
+            DiscordSyncPlugin.instance.config.getString(ConfigurationUtil.KEY_WEBHOOK_URL))
         .start();
   }
 
@@ -55,7 +57,8 @@ public class MessagingUtil {
   private static String filterDiscordMessage(String discordMessage) {
     String filteredMessage = discordMessage;
     boolean colorCodesEnabled =
-        DiscordSyncPlugin.instance.config.getBoolean("colorCodesEnabled", true);
+        DiscordSyncPlugin.instance.config.getBoolean(
+            ConfigurationUtil.KEY_BOT_COLOR_CODES_ENABLED, true);
     if (!colorCodesEnabled) {
       filteredMessage = filteredMessage.replace("§", "");
     }
