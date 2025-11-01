@@ -1,7 +1,6 @@
 package me.pilkeysek.discord;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import me.pilkeysek.ConfigurationUtil;
 import me.pilkeysek.DiscordSyncPlugin;
@@ -51,7 +50,7 @@ public class MessageEventListener extends ListenerAdapter {
                           .setDescription("There are no players online.")
                           .setColor(0xFFFFFF)
                           .build()))
-              .setAllowedMentions(Collections.emptyList())
+              .mentionRepliedUser(false)
               .submit();
           return;
         }
@@ -69,7 +68,7 @@ public class MessageEventListener extends ListenerAdapter {
                                 + playersStr)
                         .setColor(0xFFFFFF)
                         .build()))
-            .setAllowedMentions(Collections.emptyList())
+            .mentionRepliedUser(false)
             .submit();
         return;
       }
