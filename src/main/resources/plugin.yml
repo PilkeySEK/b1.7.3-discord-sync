@@ -4,4 +4,4 @@ version: 1.0
 commands:
   discordsync:
     description: Configure DiscordSync
-    usage: /discordsync config (get <key>|set <key> <value>|remove <key>)
+    usage: /discordsync (reload|config (get <key>|set <key> <value>|remove <key>))
