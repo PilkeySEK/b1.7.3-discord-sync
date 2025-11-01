@@ -12,6 +12,7 @@ public class ConfigurationUtil {
   public static String KEY_BOT_TOKEN = "bot.token";
   public static String KEY_BOT_CHANNEL = "bot.channel";
   public static String KEY_BOT_COLOR_CODES_ENABLED = "bot.color_codes";
+  public static String KEY_WEBHOOK_HIDE_MESSAGE_PREFIX = "webhook.hide_message_prefix";
 
   public static Map<String, Object> getDefaultConfigKV() {
     Map<String, Object> map = new HashMap<>();
@@ -23,6 +24,7 @@ public class ConfigurationUtil {
     map.put(KEY_BOT_TOKEN, "");
     map.put(KEY_BOT_CHANNEL, "");
     map.put(KEY_BOT_COLOR_CODES_ENABLED, true);
+    map.put(KEY_WEBHOOK_HIDE_MESSAGE_PREFIX, "::");
     return map;
   }
 }
